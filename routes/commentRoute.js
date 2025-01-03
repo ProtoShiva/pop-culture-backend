@@ -4,7 +4,7 @@ const {
   userLogin,
   getUserDetails,
   userLogout,
-} = require("../controllers/userController.js")
+} = require("../controllers/commentController.js")
 const userAuth = require("../../middleware/auth.js")
 
 const route = express.Router()

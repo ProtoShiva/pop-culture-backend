@@ -11,6 +11,13 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    img: {
+      type: String,
+    },
+    savedPosts: {
+      type: [String],
+      default: [],
+    },
     password: {
       type: String,
       required: true,

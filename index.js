@@ -4,6 +4,8 @@ const cors = require("cors")
 const dotenv = require("dotenv").config()
 const { connectDb } = require("./database/db")
 const userRoutes = require("./routes/userRoute.js")
+const postRoutes = require("./routes/postRoute.js")
+const commentRoutes = require("./routes/commentRoute.js")
 const errorMiddleware = require("./middleware/errorHandler.js")
 
 const app = express()
@@ -22,6 +24,8 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/user", userRoutes)
+app.use("/api/user", postRoutes)
+app.use("/api/user", commentRoutes)
 app.use(errorMiddleware)
 
 app.listen(PORT, () => console.log(`server listening at port ${PORT}`))
