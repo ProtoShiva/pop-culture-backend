@@ -1,17 +1,17 @@
 const express = require("express")
 const {
-  registerUser,
-  userLogin,
-  getUserDetails,
-  userLogout,
+  getPosts,
+  getPost,
+  createPost,
+  deletePost,
 } = require("../controllers/postController.js")
-const userAuth = require("../../middleware/auth.js")
 
-const route = express.Router()
+const userAuth = require("../middleware/auth.js")
 
-route.post("/register", registerUser)
-route.post("/login", userLogin)
-route.post("/logout", userLogout)
-route.get("/", userAuth, getUserDetails)
+const router = express.Router()
 
-module.exports = route
+router.get("/", getPosts)
+router.get("/:slug", getPost)
+router.post("/", userAuth, createPost)
+router.delete("/:id", userAuth, deletePost)
+module.exports = router

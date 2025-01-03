@@ -5,13 +5,13 @@ const {
   getUserDetails,
   userLogout,
 } = require("../controllers/userController.js")
-const userAuth = require("../../middleware/auth.js")
+const userAuth = require("../middleware/auth.js")
 
-const route = express.Router()
+const router = express.Router()
 
-route.post("/register", registerUser)
-route.post("/login", userLogin)
-route.post("/logout", userLogout)
-route.get("/", userAuth, getUserDetails)
+router.post("/register", registerUser)
+router.post("/login", userLogin)
+router.post("/logout", userLogout)
+router.get("/", userAuth, getUserDetails)
 
-module.exports = route
+module.exports = router

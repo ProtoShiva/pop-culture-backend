@@ -1,8 +1,8 @@
-const User = require("../../models/user.model")
+const User = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-const ErrorHandler = require("../../utils/customError")
-const { asyncHandler } = require("../../utils/tryCatch")
+const ErrorHandler = require("../utils/customError")
+const { asyncHandler } = require("../utils/tryCatch")
 
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body

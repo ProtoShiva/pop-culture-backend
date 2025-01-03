@@ -11,16 +11,23 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    password: {
+      type: String,
+      required: true,
+    },
     img: {
       type: String,
+      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    },
+    role: {
+      type: String,
+      required: true,
+      default: "user",
+      enum: ["admin", "user"],
     },
     savedPosts: {
       type: [String],
       default: [],
-    },
-    password: {
-      type: String,
-      required: true,
     },
   },
   { timestamps: true }
