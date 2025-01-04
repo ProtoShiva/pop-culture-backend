@@ -5,16 +5,28 @@ const { asyncHandler } = require("../utils/tryCatch")
 const ImageKit = require("imagekit")
 
 const getPosts = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 2
+
   const posts = await Post.find()
+    .populate("user", "username")
+    .limit(limit)
+    .skip((page - 1) * limit)
+
+  const totalPosts = await Post.countDocuments()
+  const hasMore = page * limit < totalPosts
 
   if (!posts)
     return next(new ErrorHandler("Cannot find Posts. Please try again."))
 
-  res.status(200).json({ posts })
+  res.status(200).json({ posts, hasMore })
 })
 
 const getPost = asyncHandler(async (req, res, next) => {
-  const post = await Post.findOne({ slug: req.params.slug })
+  const post = await Post.findOne({ slug: req.params.slug }).populate(
+    "user",
+    "username img"
+  )
 
   if (!post)
     return next(new ErrorHandler("Cannot find Posts. Please try again."))
@@ -43,7 +55,7 @@ const createPost = asyncHandler(async (req, res, next) => {
       new ErrorHandler("Failed to create the post. Please try again.")
     )
   }
-  res.status(200).json(post)
+  res.status(201).json(post)
 })
 
 const deletePost = asyncHandler(async (req, res, next) => {

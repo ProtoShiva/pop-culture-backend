@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", userRoutes)
 app.use("/api/posts", postRoutes)
-// app.use("/api/user", commentRoutes)
+app.use("/api/user", commentRoutes)
 app.use(errorMiddleware)
 
 app.listen(PORT, () => console.log(`server listening at port ${PORT}`))
