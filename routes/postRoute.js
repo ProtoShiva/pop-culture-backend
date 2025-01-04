@@ -9,13 +9,14 @@ const {
 } = require("../controllers/postController.js")
 
 const userAuth = require("../middleware/auth.js")
+const increaseVisit = require("../middleware/increaseVisit.js")
 
 const router = express.Router()
 
 router.get("/upload-auth", uploadAuth)
 
 router.get("/", getPosts)
-router.get("/:slug", getPost)
+router.get("/:slug", increaseVisit, getPost)
 router.post("/", userAuth, createPost)
 router.delete("/:id", userAuth, deletePost)
 router.patch("/feature", userAuth, featurePost)
