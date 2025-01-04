@@ -14,7 +14,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "imagekit": "^6.0.0",
+    "imagekitio-react": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.2"
+    "mongoose": "^8.8.2",
+    "uninstall": "^0.0.0"
   }
 }

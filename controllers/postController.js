@@ -2,6 +2,7 @@ const Post = require("../models/post.model.js")
 const User = require("../models/user.model.js")
 const ErrorHandler = require("../utils/customError")
 const { asyncHandler } = require("../utils/tryCatch")
+const ImageKit = require("imagekit")
 
 const getPosts = asyncHandler(async (req, res, next) => {
   const posts = await Post.find()
@@ -59,4 +60,15 @@ const deletePost = asyncHandler(async (req, res, next) => {
   res.status(200).json(deletePost)
 })
 
-module.exports = { deletePost, createPost, getPost, getPosts }
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.IK_URL_ENDPOINT,
+  publicKey: process.env.IK_PUBLIC_KEY,
+  privateKey: process.env.IK_PRIVATE_KEY,
+})
+
+const uploadAuth = async (req, res) => {
+  const result = imagekit.getAuthenticationParameters()
+  res.send(result)
+}
+
+module.exports = { deletePost, uploadAuth, createPost, getPost, getPosts }
