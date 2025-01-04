@@ -21,7 +21,19 @@ const getPost = asyncHandler(async (req, res, next) => {
 })
 
 const createPost = asyncHandler(async (req, res, next) => {
-  const newPost = new Post({ user: req.id, ...req.body })
+  let slug = req.body.title.replace(/ /g, "-").toLowerCase()
+
+  let existingPost = await Post.findOne({ slug })
+
+  let counter = 2
+
+  while (existingPost) {
+    slug = `${slug}-${counter}`
+    existingPost = await Post.findOne({ slug })
+    counter++
+  }
+
+  const newPost = new Post({ user: req.id, slug, ...req.body })
 
   const post = await newPost.save()
 
