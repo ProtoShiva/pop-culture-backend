@@ -8,8 +8,63 @@ const getPosts = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1
   const limit = parseInt(req.query.limit) || 2
 
+  const query = {}
+
+  const cat = req.query.cat
+  const author = req.query.author
+  const searchQuery = req.query.search
+  const sortQuery = req.query.sort
+  const featured = req.query.featured
+
+  if (cat) {
+    query.category = cat
+  }
+
+  if (searchQuery) {
+    query.title = { $regex: searchQuery, $options: "i" }
+  }
+
+  if (author) {
+    const user = await User.findOne({ username: author }).select("_id")
+
+    if (!user) {
+      return res.status(404).json("No post found!")
+    }
+
+    query.user = user._id
+  }
+
+  let sortObj = { createdAt: -1 }
+
+  if (sortQuery) {
+    switch (sortQuery) {
+      case "newest":
+        sortObj = { createdAt: -1 }
+        break
+      case "oldest":
+        sortObj = { createdAt: 1 }
+        break
+      case "popular":
+        sortObj = { visit: -1 }
+        break
+      case "trending":
+        sortObj = { visit: -1 }
+        query.createdAt = {
+          $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        }
+        break
+      default:
+        break
+    }
+  }
+
+  if (featured) {
+    query.isFeatured = true
+  }
+
   const posts = await Post.find()
     .populate("user", "username")
+    .sort(sortObj)
     .limit(limit)
     .skip((page - 1) * limit)
 
@@ -29,7 +84,7 @@ const getPost = asyncHandler(async (req, res, next) => {
   )
 
   if (!post)
-    return next(new ErrorHandler("Cannot find Posts. Please try again."))
+    return next(new ErrorHandler("Cannot find Posts. Please try again.", 403))
   res.status(200).json(post)
 })
 
@@ -61,6 +116,13 @@ const createPost = asyncHandler(async (req, res, next) => {
 const deletePost = asyncHandler(async (req, res, next) => {
   const { id } = req?.params
 
+  const role = "admin"
+
+  if (role === "admin") {
+    await Post.findByIdAndDelete(req.params.id)
+    return res.status(200).json("Post has been deleted")
+  }
+
   const deletedPost = await Post.findOneAndDelete({
     id,
     user: req.id,
@@ -70,6 +132,34 @@ const deletePost = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler("You Can only delete your own post!", 403))
 
   res.status(200).json(deletePost)
+})
+
+const featurePost = asyncHandler(async (req, res, next) => {
+  const postId = req.body.postId
+
+  const role = "admin"
+
+  if (role !== "admin") {
+    return res.status(403).json("You cannot feature posts!")
+  }
+
+  const post = await Post.findById(postId)
+
+  if (!post) {
+    return next(new ErrorHandler("Cannot find Posts. Please try again.", 403))
+  }
+
+  const isFeatured = post.isFeatured
+
+  const updatedPost = await Post.findByIdAndUpdate(
+    postId,
+    {
+      isFeatured: !isFeatured,
+    },
+    { new: true }
+  )
+
+  res.status(200).json(updatedPost)
 })
 
 const imagekit = new ImageKit({
@@ -83,4 +173,11 @@ const uploadAuth = async (req, res) => {
   res.send(result)
 }
 
-module.exports = { deletePost, uploadAuth, createPost, getPost, getPosts }
+module.exports = {
+  deletePost,
+  uploadAuth,
+  createPost,
+  getPost,
+  getPosts,
+  featurePost,
+}

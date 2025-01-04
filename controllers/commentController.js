@@ -3,7 +3,7 @@ const User = require("../models/user.model.js")
 const { asyncHandler } = require("../utils/tryCatch")
 const ErrorHandler = require("../utils/customError")
 
-const getPostComments = asyncHandler(async (req, res) => {
+const getPostComments = asyncHandler(async (req, res, next) => {
   const comments = await Comment.find({ post: req.params.postId })
     .populate("user", "username img")
     .sort({ createdAt: -1 })
@@ -14,7 +14,7 @@ const getPostComments = asyncHandler(async (req, res) => {
   res.status(200).json(comments)
 })
 
-const addComment = asyncHandler(async (req, res) => {
+const addComment = asyncHandler(async (req, res, next) => {
   const postId = req.params.postId
 
   const newComment = new Comment({
@@ -34,7 +34,7 @@ const addComment = asyncHandler(async (req, res) => {
   res.status(201).json(savedComment)
 })
 
-const deleteComment = asyncHandler(async (req, res) => {
+const deleteComment = asyncHandler(async (req, res, next) => {
   const id = req.params.id
 
   const role = "admin"

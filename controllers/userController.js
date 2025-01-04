@@ -105,4 +105,37 @@ const getUserDetails = asyncHandler(async (req, res, next) => {
   return res.status(200).json({ success: true, user })
 })
 
-module.exports = { registerUser, userLogin, getUserDetails, userLogout }
+const getUserSavedPosts = asyncHandler(async (req, res) => {
+  const user = await User.findOne(req.id)
+
+  res.status(200).json(user.savedPosts)
+})
+
+const savePost = asyncHandler(async (req, res, next) => {
+  const postId = req.body.postId
+
+  const user = await User.findOne(req.id)
+
+  const isSaved = user.savedPosts.some((p) => p === postId)
+
+  if (!isSaved) {
+    await User.findByIdAndUpdate(user._id, {
+      $push: { savedPosts: postId },
+    })
+  } else {
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { savedPosts: postId },
+    })
+  }
+
+  res.status(200).json(isSaved ? "Post unsaved" : "Post saved")
+})
+
+module.exports = {
+  registerUser,
+  userLogin,
+  getUserDetails,
+  userLogout,
+  getUserSavedPosts,
+  savePost,
+}
