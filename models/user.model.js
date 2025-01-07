@@ -9,7 +9,6 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -17,7 +16,7 @@ const userSchema = mongoose.Schema(
     },
     img: {
       type: String,
-      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      default: "movie-logo.jpeg",
     },
     role: {
       type: String,

@@ -16,7 +16,7 @@ const getPosts = asyncHandler(async (req, res, next) => {
   const sortQuery = req.query.sort
   const featured = req.query.featured
 
-  if (cat) {
+  if (cat && cat !== "general") {
     query.category = cat
   }
 
@@ -25,10 +25,10 @@ const getPosts = asyncHandler(async (req, res, next) => {
   }
 
   if (author) {
-    const user = await User.findOne({ username: author }).select("_id")
+    const user = await User.findOne({ name: author }).select("_id")
 
     if (!user) {
-      return res.status(404).json("No post found!")
+      return next(new ErrorHandler("No Posts found. Please try again.", 404))
     }
 
     query.user = user._id
@@ -62,8 +62,11 @@ const getPosts = asyncHandler(async (req, res, next) => {
     query.isFeatured = true
   }
 
-  const posts = await Post.find()
-    .populate("user", "username")
+  if (query.category === "general") {
+  }
+
+  const posts = await Post.find(query)
+    .populate("user", "name")
     .sort(sortObj)
     .limit(limit)
     .skip((page - 1) * limit)
@@ -80,7 +83,7 @@ const getPosts = asyncHandler(async (req, res, next) => {
 const getPost = asyncHandler(async (req, res, next) => {
   const post = await Post.findOne({ slug: req.params.slug }).populate(
     "user",
-    "username img"
+    "name img"
   )
 
   if (!post)
