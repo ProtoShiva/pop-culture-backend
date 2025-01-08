@@ -62,16 +62,14 @@ const getPosts = asyncHandler(async (req, res, next) => {
     query.isFeatured = true
   }
 
-  if (query.category === "general") {
-  }
-
   const posts = await Post.find(query)
     .populate("user", "name")
     .sort(sortObj)
     .limit(limit)
     .skip((page - 1) * limit)
 
-  const totalPosts = await Post.countDocuments()
+  const totalPosts = await Post.countDocuments(query)
+
   const hasMore = page * limit < totalPosts
 
   if (!posts)
@@ -92,7 +90,15 @@ const getPost = asyncHandler(async (req, res, next) => {
 })
 
 const createPost = asyncHandler(async (req, res, next) => {
-  let slug = req.body.title.replace(/ /g, "-").toLowerCase()
+  let slug = req.body.title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim()
+    .split("-")
+    .slice(0, 8)
+    .join("-")
 
   let existingPost = await Post.findOne({ slug })
 
