@@ -5,7 +5,7 @@ const ErrorHandler = require("../utils/customError")
 
 const getPostComments = asyncHandler(async (req, res, next) => {
   const comments = await Comment.find({ post: req.params.postId })
-    .populate("user", "username img")
+    .populate("user", "name img")
     .sort({ createdAt: -1 })
 
   if (!comments)

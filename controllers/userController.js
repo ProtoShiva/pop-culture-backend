@@ -106,15 +106,17 @@ const getUserDetails = asyncHandler(async (req, res, next) => {
 })
 
 const getUserSavedPosts = asyncHandler(async (req, res) => {
-  const user = await User.findOne(req.id)
+  const userId = req.id
+  const user = await User.findOne({ _id: userId })
 
   res.status(200).json(user.savedPosts)
 })
 
 const savePost = asyncHandler(async (req, res, next) => {
   const postId = req.body.postId
+  const userId = req.id
 
-  const user = await User.findOne(req.id)
+  const user = await User.findOne({ _id: userId })
 
   const isSaved = user.savedPosts.some((p) => p === postId)
 
