@@ -177,8 +177,6 @@ const getPostsCount = asyncHandler(async (req, res, next) => {
   const post = await Post.countDocuments({ user: userId })
   const comment = await Comment.countDocuments({ user: userId })
 
-  if (!post || !comment)
-    return next(new ErrorHandler("Cannot find Posts. Please try again.", 403))
   res.status(200).json({ post, comment })
 })
 

@@ -141,7 +141,7 @@ const changeUserImage = asyncHandler(async (req, res, next) => {
   const userId = req.id
 
   if (!img) {
-    return next(new ErrorHandler("User Does not exist! Please Register.", 400))
+    return next(new ErrorHandler("Please Select Image", 400))
   }
 
   const updatedUser = await User.findByIdAndUpdate(
