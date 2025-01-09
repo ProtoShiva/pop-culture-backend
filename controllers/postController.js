@@ -1,3 +1,4 @@
+const Comment = require("../models/comment.model.js")
 const Post = require("../models/post.model.js")
 const User = require("../models/user.model.js")
 const ErrorHandler = require("../utils/customError")
@@ -171,6 +172,16 @@ const featurePost = asyncHandler(async (req, res, next) => {
   res.status(200).json(updatedPost)
 })
 
+const getPostsCount = asyncHandler(async (req, res, next) => {
+  const userId = req.query.userId
+  const post = await Post.countDocuments({ user: userId })
+  const comment = await Comment.countDocuments({ user: userId })
+
+  if (!post || !comment)
+    return next(new ErrorHandler("Cannot find Posts. Please try again.", 403))
+  res.status(200).json({ post, comment })
+})
+
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IK_URL_ENDPOINT,
   publicKey: process.env.IK_PUBLIC_KEY,
@@ -189,4 +200,5 @@ module.exports = {
   getPost,
   getPosts,
   featurePost,
+  getPostsCount,
 }
