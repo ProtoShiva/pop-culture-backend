@@ -113,24 +113,51 @@ const getUserSavedPosts = asyncHandler(async (req, res) => {
 })
 
 const savePost = asyncHandler(async (req, res, next) => {
-  const postId = req.body.postId
+  const { postId, image, title, cat, slug } = req.body
+
   const userId = req.id
 
   const user = await User.findOne({ _id: userId })
 
-  const isSaved = user.savedPosts.some((p) => p === postId)
+  const isSaved = user.savedPosts.some((p) => p.postId === postId)
 
   if (!isSaved) {
     await User.findByIdAndUpdate(user._id, {
-      $push: { savedPosts: postId },
+      $push: {
+        savedPosts: { postId, image, title, cat, slug },
+      },
     })
   } else {
     await User.findByIdAndUpdate(user._id, {
-      $pull: { savedPosts: postId },
+      $pull: { savedPosts: { postId } },
     })
   }
 
   res.status(200).json(isSaved ? "Post unsaved" : "Post saved")
+})
+
+const changeUserImage = asyncHandler(async (req, res, next) => {
+  const { img } = req.body
+  const userId = req.id
+
+  if (!img) {
+    return next(new ErrorHandler("User Does not exist! Please Register.", 400))
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { img },
+    { new: true }
+  )
+
+  if (!updatedUser) {
+    return next(new ErrorHandler("User Does not exist! Please Register.", 404))
+  }
+
+  res.status(200).json({
+    message: "Image updated successfully",
+    user: updatedUser,
+  })
 })
 
 module.exports = {
@@ -140,4 +167,5 @@ module.exports = {
   userLogout,
   getUserSavedPosts,
   savePost,
+  changeUserImage,
 }

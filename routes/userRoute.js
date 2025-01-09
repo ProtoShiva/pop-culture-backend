@@ -6,6 +6,7 @@ const {
   userLogout,
   getUserSavedPosts,
   savePost,
+  changeUserImage,
 } = require("../controllers/userController.js")
 const userAuth = require("../middleware/auth.js")
 
@@ -17,5 +18,6 @@ router.post("/logout", userLogout)
 router.get("/", userAuth, getUserDetails)
 router.get("/saved", userAuth, getUserSavedPosts)
 router.patch("/save", userAuth, savePost)
+router.patch("/userImage", userAuth, changeUserImage)
 
 module.exports = router

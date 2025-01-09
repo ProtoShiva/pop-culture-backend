@@ -24,10 +24,15 @@ const userSchema = mongoose.Schema(
       default: "user",
       enum: ["admin", "user"],
     },
-    savedPosts: {
-      type: [String],
-      default: [],
-    },
+    savedPosts: [
+      {
+        postId: String,
+        image: String,
+        title: String,
+        cat: String,
+        slug: String,
+      },
+    ],
   },
   { timestamps: true }
 )
